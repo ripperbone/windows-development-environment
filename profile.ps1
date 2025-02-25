@@ -33,8 +33,8 @@ function env {
 }
 
 function Python-Run {
-    $argList = $args -Split " "
-    
+    $argList = $args
+
     $Script = $argList[0]
 
     $Paths = $env:PATH -Split ";"
@@ -42,6 +42,9 @@ function Python-Run {
         if (Test-Path "$dir/$Script") {
             Write-Host "script found in $dir"
             $argList[0] = "$dir/$Script"
+  
+            $argList = $argList | ForEach-Object { "`"${_}`"" } # add quotes
+            Write-Host $argList
             Start-Process "python" -NoNewWindow -Wait -ArgumentList $argList
         }
     }
