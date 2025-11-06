@@ -9,8 +9,16 @@ function Prompt {
     "$(Get-Location) ~> " 
 }
 
-function LockWorkStation {
+function lockworkstation {
     rundll32.exe user32.dll,LockWorkStation
+}
+
+function sleepworkstation {
+    if (!(Get-Command psshutdown64 -ErrorAction SilentlyContinue)) {
+        Write-Host "psshutdown64 was not found. Install pstools or check PATH."
+        return
+    }
+    psshutdown64 -d -t 0 /accepteula
 }
 
 function LocateExecutable {
@@ -26,6 +34,12 @@ function LocateExecutable {
     else {
         $results.Source
     }
+}
+
+function what-functions {
+    # see defined functions
+    # filter out drive letters from the list
+    (Get-ChildItem function:\ | Where-Object -Property Name -notlike "[A-Z]:").Name
 }
 
 function env {
@@ -50,6 +64,12 @@ function Python-Run {
     }
 }
 
+function RandDir {
+    $Dir = (Get-ChildItem | Where-Object { Test-Path -Path $_ -PathType Container } | Get-Random).Name
+    Write-Host $Dir
+    Set-Location $Dir
+}
+
 function Toggle-Monitor { 
     param (
         [int] $Mode
@@ -65,16 +85,22 @@ function Toggle-Monitor {
     }
 }
 
+
 TodaysDate
 $host.UI.RawUI.WindowTitle = "PS"
 cd $HOME
 
 Set-Alias -Name ll -Value ls
-Set-Alias -Name lock -Value LockWorkStation
+Set-Alias -Name lock -Value lockworkstation
 Set-Alias -Name which -Value LocateExecutable
 Set-Alias -Name pyrun -Value Python-Run
 Set-Alias -Name vi -Value "C:\Program Files\Git\usr\bin\vim.exe"
+Set-Alias -Name tm -Value Toggle-Monitor
 
 Set-PSReadlineKeyHandler -Key Tab -Function MenuComplete
 
-Set-PSReadlineOption -Colors @{ Parameter = 'Gray' }
+#Set-PSReadlineOption -Colors @{ Parameter = 'Gray' }
+Set-PSReadlineOption -Colors @{ 
+    Parameter = '#b5b5b5' 
+    Command = '#b5b5b5' }
+Set-PSReadlineOption -BellStyle None
