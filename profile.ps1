@@ -18,7 +18,7 @@ function sleepworkstation {
         Write-Host "psshutdown64 was not found. Install pstools or check PATH."
         return
     }
-    psshutdown64 -d -t 0 /accepteula
+    psshutdown64 -nobanner -d -t 0 /accepteula
 }
 
 function LocateExecutable {
@@ -47,7 +47,7 @@ function env {
 }
 
 function Python-Run {
-    $argList = $args
+    [string[]] $argList = $args
 
     $Script = $argList[0]
 
